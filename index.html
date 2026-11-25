@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calculadora RTC — Reforma Tributária do Consumo</title>
+    <style>
+        :root {
+            --marinho: #14233c;
+            --marinho-claro: #22385c;
+            --dourado: #b08d57;
+            --dourado-claro: #e9dcc5;
+            --papel: #f6f4ef;
+            --branco: #ffffff;
+            --texto: #1d232b;
+            --texto-suave: #5d6673;
+            --linha: #dcd7cc;
+            --entrada: #fffbe6;
+            --entrada-borda: #e4d48a;
+            --erro: #9b2c2c;
+            --serifa: Georgia, "Times New Roman", "Liberation Serif", serif;
+            --sans: "Segoe UI", "Helvetica Neue", Arial, "Liberation Sans", sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: var(--papel);
+            color: var(--texto);
+            font-family: var(--sans);
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        header {
+            background: var(--marinho);
+            color: var(--branco);
+            border-bottom: 3px solid var(--dourado);
+        }
+
+        .conteudo {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header .conteudo {
+            padding-top: 36px;
+            padding-bottom: 32px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
+
+        .sobretitulo {
+            margin: 0 0 6px;
+            color: var(--dourado);
+            font-size: 12px;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: var(--serifa);
+            font-size: clamp(26px, 4vw, 36px);
+            font-weight: normal;
+            letter-spacing: 0.01em;
+        }
+
+        header p.descricao {
+            margin: 10px 0 0;
+            max-width: 680px;
+            color: #c9d1de;
+        }
+
+        main {
+            padding-top: 32px;
+            padding-bottom: 48px;
+        }
+
+        .cartao {
+            background: var(--branco);
+            border: 1px solid var(--linha);
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(20, 35, 60, 0.06), 0 8px 24px rgba(20, 35, 60, 0.05);
+        }
+
+        .cartao-titulo {
+            margin: 0;
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--linha);
+            font-family: var(--serifa);
+            font-size: 19px;
+            font-weight: normal;
+            color: var(--marinho);
+        }
+
+        .cartao-titulo small {
+            display: block;
+            margin-top: 2px;
+            font-family: var(--sans);
+            font-size: 13px;
+            font-style: italic;
+            color: var(--texto-suave);
+        }
+
+        fieldset {
+            margin: 0;
+            padding: 20px 24px 24px;
+            border: 0;
+        }
+
+        .grade-entradas {
+            display: grid;
+            grid-template-columns: 1.4fr repeat(5, 1fr);
+            gap: 16px;
+        }
+
+        .campo label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--texto-suave);
+        }
+
+        .entrada {
+            display: flex;
+            align-items: center;
+            background: var(--entrada);
+            border: 1px solid var(--entrada-borda);
+            border-radius: 3px;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .entrada:focus-within {
+            border-color: var(--dourado);
+            box-shadow: 0 0 0 3px rgba(176, 141, 87, 0.25);
+        }
+
+        .entrada span {
+            padding: 0 10px;
+            color: var(--texto-suave);
+            font-size: 14px;
+        }
+
+        .entrada input {
+            width: 100%;
+            min-width: 0;
+            padding: 10px 10px;
+            border: 0;
+            background: transparent;
+            font: 600 17px var(--sans);
+            color: var(--marinho);
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .entrada input:focus {
+            outline: none;
+        }
+
+        .entrada.invalida {
+            border-color: var(--erro);
+        }
+
+        #aviso {
+            min-height: 1.5em;
+            margin: 14px 0 0;
+            color: var(--erro);
+            font-size: 14px;
+        }
+
+        #aviso:empty {
+            display: none;
+        }
+
+        .comparativo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-variant-numeric: tabular-nums;
+        }
+
+        caption {
+            text-align: left;
+        }
+
+        th,
+        td {
+            padding: 11px 24px;
+            border-bottom: 1px solid #ece8df;
+        }
+
+        th {
+            font-weight: normal;
+            text-align: left;
+            color: var(--texto);
+        }
+
+        td {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        tr.base th,
+        tr.base td {
+            font-weight: 600;
+            color: var(--marinho);
+            background: #f9f7f2;
+        }
+
+        tr.separador th,
+        tr.separador td {
+            border-top: 1px solid var(--linha);
+        }
+
+        tr.total th,
+        tr.total td {
+            font-weight: 600;
+        }
+
+        tr.liquido th,
+        tr.liquido td {
+            border-top: 1px solid var(--linha);
+            color: var(--marinho);
+        }
+
+        tr.nulo td {
+            color: #a4abb5;
+        }
+
+        tr.pagar th,
+        tr.pagar td {
+            border-bottom: 0;
+            background: var(--marinho);
+            color: var(--branco);
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        tr.pagar td {
+            color: var(--dourado-claro);
+            font-family: var(--serifa);
+            font-size: 20px;
+        }
+
+        .marca {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 0 6px;
+            border: 1px solid var(--dourado);
+            border-radius: 2px;
+            color: var(--dourado);
+            font-size: 10px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+
+        .notas {
+            margin-top: 24px;
+            padding: 18px 24px;
+            border-left: 3px solid var(--dourado);
+            background: var(--branco);
+            color: var(--texto-suave);
+            font-size: 14px;
+        }
+
+        .notas p {
+            margin: 0;
+        }
+
+        .notas p + p {
+            margin-top: 8px;
+        }
+
+        footer {
+            padding: 20px 0 32px;
+            color: var(--texto-suave);
+            font-size: 12px;
+            text-align: center;
+        }
+
+        @media (max-width: 900px) {
+            .grade-entradas {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .grade-entradas .campo:first-child {
+                grid-column: 1 / -1;
+            }
+
+            .comparativo {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .conteudo {
+                padding: 0 16px;
+            }
+
+            .grade-entradas {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            th,
+            td,
+            fieldset,
+            .cartao-titulo {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+        }
+
+        @media print {
+            body {
+                background: var(--branco);
+            }
+
+            .cartao {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="conteudo">
+            <p class="sobretitulo">Reforma Tributária do Consumo</p>
+            <h1>Calculadora de Preços e Impostos</h1>
+            <p class="descricao">
+                Comparativo entre o valor do produto em 2026, com ICMS, PIS e COFINS embutidos,
+                e o valor futuro em pedidos e NF-e nos anos de 2027 e 2028, com a entrada da CBS.
+            </p>
+        </div>
+    </header>
+
+    <main class="conteudo">
+        <form id="formulario" class="cartao" autocomplete="off" novalidate>
+            <h2 class="cartao-titulo">
+                Alíquotas dos Impostos e Valor do Produto
+                <small>Preencha os campos destacados; os resultados são atualizados automaticamente.</small>
+            </h2>
+            <fieldset>
+                <legend class="sr-only">Dados de entrada</legend>
+                <div class="grade-entradas">
+                    <div class="campo">
+                        <label for="valorAtual">Valor Atual do Produto</label>
+                        <div class="entrada"><span>R$</span><input id="valorAtual" name="valorAtual" type="text" inputmode="decimal" value="73,00" data-casas="2"></div>
+                    </div>
+                    <div class="campo">
+                        <label for="icms">ICMS</label>
+                        <div class="entrada"><input id="icms" name="icms" type="text" inputmode="decimal" value="4,00" data-casas="2"><span>%</span></div>
+                    </div>
+                    <div class="campo">
+                        <label for="pis">PIS</label>
+                        <div class="entrada"><input id="pis" name="pis" type="text" inputmode="decimal" value="1,65" data-casas="2"><span>%</span></div>
+                    </div>
+                    <div class="campo">
+                        <label for="cofins">COFINS</label>
+                        <div class="entrada"><input id="cofins" name="cofins" type="text" inputmode="decimal" value="7,60" data-casas="2"><span>%</span></div>
+                    </div>
+                    <div class="campo">
+                        <label for="ibsuf">IBSUF</label>
+                        <div class="entrada"><input id="ibsuf" name="ibsuf" type="text" inputmode="decimal" value="0,00" data-casas="2"><span>%</span></div>
+                    </div>
+                    <div class="campo">
+                        <label for="cbs">CBS</label>
+                        <div class="entrada"><input id="cbs" name="cbs" type="text" inputmode="decimal" value="11,30" data-casas="2"><span>%</span></div>
+                    </div>
+                </div>
+                <p id="aviso" role="alert"></p>
+            </fieldset>
+        </form>
+
+        <div class="comparativo" aria-live="polite">
+            <section class="cartao">
+                <table>
+                    <caption>
+                        <h2 class="cartao-titulo">
+                            Valores 2026
+                            <small>O valor atual do produto contém ICMS, PIS e COFINS em 2026</small>
+                        </h2>
+                    </caption>
+                    <tbody>
+                        <tr class="base"><th scope="row">Valor Atual do Produto</th><td data-saida="a26.valorProduto" data-formato="moeda"></td></tr>
+                        <tr class="separador"><th scope="row">Valor ICMS</th><td data-saida="a26.icms" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor PIS</th><td data-saida="a26.pis" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor COFINS</th><td data-saida="a26.cofins" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor IBSUF <span class="marca" title="Não computado nos totais até 2029">fora do total</span></th><td data-saida="a26.ibsuf" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor CBS</th><td data-saida="a26.cbs" data-formato="detalhe"></td></tr>
+                        <tr class="total separador"><th scope="row">Total Impostos</th><td data-saida="a26.totalImpostos" data-formato="moeda"></td></tr>
+                        <tr><th scope="row">Impostos % (aparente)</th><td data-saida="a26.percentualAparente" data-formato="percentual"></td></tr>
+                        <tr class="liquido"><th scope="row">Valor Líquido Produto</th><td data-saida="a26.valorLiquido" data-formato="moeda"></td></tr>
+                        <tr class="pagar"><th scope="row">Valor a Pagar</th><td data-saida="a26.valorAPagar" data-formato="moeda"></td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="cartao">
+                <table>
+                    <caption>
+                        <h2 class="cartao-titulo">
+                            Valores 2027/2028
+                            <small>Valor futuro nos pedidos e nas NF-e</small>
+                        </h2>
+                    </caption>
+                    <tbody>
+                        <tr class="base"><th scope="row">Valor Produto (com ICMS)</th><td data-saida="a27.valorProduto" data-formato="moeda"></td></tr>
+                        <tr class="separador"><th scope="row">Valor ICMS</th><td data-saida="a27.icms" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor PIS</th><td data-saida="a27.pis" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor COFINS</th><td data-saida="a27.cofins" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor IBSUF <span class="marca" title="Não computado nos totais até 2029">fora do total</span></th><td data-saida="a27.ibsuf" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor CBS</th><td data-saida="a27.cbs" data-formato="detalhe"></td></tr>
+                        <tr class="total separador"><th scope="row">Total Impostos</th><td data-saida="a27.totalImpostos" data-formato="moeda"></td></tr>
+                        <tr><th scope="row">Impostos % (aparente)</th><td data-saida="a27.percentualAparente" data-formato="percentual"></td></tr>
+                        <tr class="liquido"><th scope="row">Valor Líquido Produto</th><td data-saida="a27.valorLiquido" data-formato="moeda"></td></tr>
+                        <tr class="pagar"><th scope="row">Valor a Pagar</th><td data-saida="a27.valorAPagar" data-formato="moeda"></td></tr>
+                    </tbody>
+                </table>
+            </section>
+        </div>
+
+        <aside class="notas">
+            <p>
+                <strong>IBSUF:</strong> entra em vigor somente a partir de 2029 e será escalonado com redução
+                de 10% ao ano no valor do ICMS, parcela que passa a compor o IBSUF. Em princípio, a alíquota
+                do IBSUF será igual à do ICMS atual em 2033. Até lá, seu valor é exibido, mas não compõe os totais.
+            </p>
+            <p>
+                <strong>2027/2028:</strong> PIS e COFINS deixam de existir. O valor do produto é recomposto
+                mantendo o ICMS embutido, e a CBS é acrescida por fora no valor a pagar.
+            </p>
+        </aside>
+    </main>
+
+    <footer>
+        Valores meramente estimativos, calculados a partir das alíquotas informadas.
+    </footer>
+
+    <script>
+        'use strict';
+
+        function calcular2026({ valorAtual, icms, pis, cofins, ibsuf, cbs }) {
+            const valores = {
+                valorProduto: valorAtual,
+                icms: valorAtual * icms,
+                pis: valorAtual * pis,
+                cofins: valorAtual * cofins,
+                ibsuf: valorAtual * ibsuf * 0,
+                cbs: valorAtual * cbs * 0,
+            };
+            // IBSUF fica fora dos totais até 2029.
+            valores.totalImpostos = valores.icms + valores.pis + valores.cofins + valores.cbs;
+            valores.percentualAparente = valorAtual ? valores.totalImpostos / valorAtual : 0;
+            valores.valorLiquido = valorAtual * (1 - (icms + pis + cofins));
+            valores.valorAPagar = valorAtual;
+            return valores;
+        }
+
+        function calcular2027({ valorAtual, icms, pis, cofins, ibsuf, cbs }) {
+            // Retira PIS/COFINS do preço mantendo o ICMS "por dentro".
+            const valorProduto = valorAtual * (1 - (icms + pis + cofins)) / (1 - icms);
+            const valores = {
+                valorProduto,
+                icms: valorProduto * icms,
+                pis: 0,
+                cofins: 0,
+                ibsuf: valorProduto * ibsuf * 0,
+                cbs: valorProduto * cbs,
+            };
+            valores.totalImpostos = valores.icms + valores.cbs;
+            valores.percentualAparente = valorProduto ? valores.totalImpostos / valorProduto : 0;
+            valores.valorLiquido = valorProduto * (1 - icms);
+            valores.valorAPagar = valorProduto + valores.cbs;
+            return valores;
+        }
+
+        function lerNumero(texto) {
+            const limpo = String(texto).trim().replace(/\s|R\$|%/g, '');
+            if (limpo === '') {
+                return 0;
+            }
+            const normalizado = limpo.includes(',') ? limpo.replace(/\./g, '').replace(',', '.') : limpo;
+            return /^-?\d*\.?\d+$/.test(normalizado) ? Number(normalizado) : NaN;
+        }
+
+        const formatos = {
+            moeda: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }),
+            detalhe: new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 6,
+                maximumFractionDigits: 6,
+            }),
+            percentual: new Intl.NumberFormat('pt-BR', {
+                style: 'percent',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            }),
+        };
+
+        const formulario = document.getElementById('formulario');
+        const aviso = document.getElementById('aviso');
+        const saidas = document.querySelectorAll('[data-saida]');
+        const campos = ['valorAtual', 'icms', 'pis', 'cofins', 'ibsuf', 'cbs'];
+
+        function lerEntradas() {
+            const entradas = {};
+            const erros = [];
+
+            for (const nome of campos) {
+                const input = formulario.elements[nome];
+                const valor = lerNumero(input.value);
+                const invalido = !Number.isFinite(valor) || valor < 0;
+                input.parentElement.classList.toggle('invalida', invalido);
+                if (invalido) {
+                    erros.push(input.labels[0].textContent);
+                }
+                entradas[nome] = nome === 'valorAtual' ? valor : valor / 100;
+            }
+
+            if (erros.length) {
+                return { erro: `Valor inválido em: ${erros.join(', ')}.` };
+            }
+            if (entradas.icms >= 1) {
+                formulario.elements.icms.parentElement.classList.add('invalida');
+                return { erro: 'A alíquota de ICMS deve ser menor que 100%.' };
+            }
+            return { entradas };
+        }
+
+        function limparSaidas() {
+            saidas.forEach((celula) => {
+                celula.textContent = '—';
+            });
+        }
+
+        function atualizar() {
+            const { entradas, erro } = lerEntradas();
+            aviso.textContent = erro ?? '';
+
+            if (erro || entradas.valorAtual === 0) {
+                limparSaidas();
+                return;
+            }
+
+            const resultados = { a26: calcular2026(entradas), a27: calcular2027(entradas) };
+
+            saidas.forEach((celula) => {
+                const [cenario, campo] = celula.dataset.saida.split('.');
+                celula.textContent = formatos[celula.dataset.formato].format(resultados[cenario][campo]);
+            });
+        }
+
+        function formatarCampo(input) {
+            const valor = lerNumero(input.value);
+            if (Number.isFinite(valor) && input.value.trim() !== '') {
+                const casas = Number(input.dataset.casas);
+                input.value = valor.toLocaleString('pt-BR', {
+                    minimumFractionDigits: casas,
+                    maximumFractionDigits: 6,
+                });
+            }
+        }
+
+        formulario.addEventListener('input', atualizar);
+        formulario.addEventListener('focusout', (evento) => {
+            if (evento.target instanceof HTMLInputElement) {
+                formatarCampo(evento.target);
+            }
+        });
+        formulario.addEventListener('focusin', (evento) => {
+            if (evento.target instanceof HTMLInputElement) {
+                evento.target.select();
+            }
+        });
+        formulario.addEventListener('submit', (evento) => evento.preventDefault());
+
+        atualizar();
+    </script>
+</body>
+</html>

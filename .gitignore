@@ -1,0 +1,8 @@
+.claude/
+.idea/
+CLAUDE.md
+PLANEJAMENTO.md
+package.json
+node_modules/
+.DS_Store
+*.log
