@@ -408,7 +408,7 @@
                         <tr><th scope="row">Valor PIS</th><td data-saida="a26.pis" data-formato="detalhe"></td></tr>
                         <tr><th scope="row">Valor COFINS</th><td data-saida="a26.cofins" data-formato="detalhe"></td></tr>
                         <tr><th scope="row">Valor IBSUF <span class="marca" title="Não computado nos totais até 2029">fora do total</span></th><td data-saida="a26.ibsuf" data-formato="detalhe"></td></tr>
-                        <tr><th scope="row">Valor CBS</th><td data-saida="a26.cbs" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor CBS <span class="marca" title="Não computado nos totais até 2027">fora do total</span></th><td data-saida="a26.cbs" data-formato="detalhe"></td></tr>
                         <tr class="total separador"><th scope="row">Total Impostos</th><td data-saida="a26.totalImpostos" data-formato="moeda"></td></tr>
                         <tr><th scope="row">Impostos % (aparente)</th><td data-saida="a26.percentualAparente" data-formato="percentual"></td></tr>
                         <tr class="total separador"><th scope="row">Impostos % (real)</th><td data-saida="a26.percentualReal" data-formato="percentual"></td></tr>
@@ -429,8 +429,8 @@
                     <tbody>
                         <tr class="base"><th scope="row">Valor Produto (com ICMS)</th><td data-saida="a27.valorProduto" data-formato="moeda"></td></tr>
                         <tr class="separador"><th scope="row">Valor ICMS</th><td data-saida="a27.icms" data-formato="detalhe"></td></tr>
-                        <tr class="nulo"><th scope="row">Valor PIS</th><td data-saida="a27.pis" data-formato="detalhe"></td></tr>
-                        <tr class="nulo"><th scope="row">Valor COFINS</th><td data-saida="a27.cofins" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor PIS <span class="marca" title="Substituido pelo CBS a partir de 2027">ZERADO</span></th><td data-saida="a27.pis" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor COFINS <span class="marca" title="Substituido pelo CBS a partir de 2027">ZERADO</span></th><td data-saida="a27.cofins" data-formato="detalhe"></td></tr>
                         <tr><th scope="row">Valor IBSUF <span class="marca" title="Não computado nos totais até 2029">fora do total</span></th><td data-saida="a27.ibsuf" data-formato="detalhe"></td></tr>
                         <tr><th scope="row">Valor CBS</th><td data-saida="a27.cbs" data-formato="detalhe"></td></tr>
                         <tr class="total separador"><th scope="row">Total Impostos</th><td data-saida="a27.totalImpostos" data-formato="moeda"></td></tr>
@@ -464,18 +464,19 @@
         'use strict';
 
         function calcular2026({ valorAtual, icms, pis, cofins, ibsuf, cbs }) {
+            const valorLiquido = valorAtual * (1 - (icms + pis + cofins));
             const valores = {
                 valorProduto: valorAtual,
                 icms: valorAtual * icms,
                 pis: valorAtual * pis,
                 cofins: valorAtual * cofins,
-                ibsuf: valorAtual * ibsuf * 0,
-                cbs: valorAtual * cbs * 0,
+                ibsuf: valorLiquido * ibsuf,
+                cbs: valorLiquido * cbs,
             };
             // IBSUF fica fora dos totais até 2029.
-            valores.totalImpostos = valores.icms + valores.pis + valores.cofins + valores.cbs;
+            valores.totalImpostos = valores.icms + valores.pis + valores.cofins;
             valores.percentualAparente = valorAtual ? valores.totalImpostos / valorAtual : 0;
-            valores.valorLiquido = valorAtual * (1 - (icms + pis + cofins));
+            valores.valorLiquido = valorLiquido;
             valores.percentualReal = valores.valorLiquido ? valores.totalImpostos / valores.valorLiquido : 0;
             valores.valorAPagar = valorAtual;
             return valores;
@@ -483,18 +484,19 @@
 
         function calcular2027({ valorAtual, icms, pis, cofins, ibsuf, cbs }) {
             // Retira PIS/COFINS do preço mantendo o ICMS "por dentro".
+            const valorLiquido = valorAtual * (1 - (icms + pis + cofins));
             const valorProduto = valorAtual * (1 - (icms + pis + cofins)) / (1 - icms);
             const valores = {
                 valorProduto,
                 icms: valorProduto * icms,
                 pis: 0,
                 cofins: 0,
-                ibsuf: valorProduto * ibsuf * 0,
-                cbs: valorProduto * cbs,
+                ibsuf: valorLiquido * ibsuf,
+                cbs: valorLiquido * cbs,
             };
             valores.totalImpostos = valores.icms + valores.cbs;
             valores.percentualAparente = valorProduto ? valores.totalImpostos / valorProduto : 0;
-            valores.valorLiquido = valorProduto * (1 - icms);
+            valores.valorLiquido = valorLiquido;
             valores.percentualReal = valores.valorLiquido ? valores.totalImpostos / valores.valorLiquido : 0;
             valores.valorAPagar = valorProduto + valores.cbs;
             return valores;
