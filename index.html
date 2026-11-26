@@ -12,6 +12,7 @@
             --dourado-claro: #e9dcc5;
             --papel: #f6f4ef;
             --branco: #ffffff;
+            --green: #008000;
             --texto: #1d232b;
             --texto-suave: #5d6673;
             --linha: #dcd7cc;
@@ -241,7 +242,7 @@
         tr.liquido th,
         tr.liquido td {
             border-top: 1px solid var(--linha);
-            color: var(--marinho);
+            color: var(--green);
         }
 
         tr.nulo td {
@@ -359,33 +360,33 @@
         <form id="formulario" class="cartao" autocomplete="off" novalidate>
             <h2 class="cartao-titulo">
                 Alíquotas dos Impostos e Valor do Produto
-                <small>Preencha os campos destacados; os resultados são atualizados automaticamente.</small>
+                <small>Preencha os campos destacados; os resultados são atualizados automaticamente.<br/>Todos os campos devem ser preenchidos com valores corretos, definidos em LEI (não invente).</small>
             </h2>
             <fieldset>
                 <legend class="sr-only">Dados de entrada</legend>
                 <div class="grade-entradas">
                     <div class="campo">
-                        <label for="valorAtual">Valor Atual do Produto</label>
-                        <div class="entrada"><span>R$</span><input id="valorAtual" name="valorAtual" type="text" inputmode="decimal" value="73,00" data-casas="2"></div>
+                        <label for="valorAtual" title="Valor usado em 2026 para as Ordens de Venda, que é a referência para os valores a partir de 2027.">Valor Produto em 2026</label>
+                        <div class="entrada"><span>R$</span><input id="valorAtual" name="valorAtual" type="text" inputmode="decimal" value="100,00" data-casas="2"></div>
                     </div>
                     <div class="campo">
-                        <label for="icms">ICMS</label>
-                        <div class="entrada"><input id="icms" name="icms" type="text" inputmode="decimal" value="4,00" data-casas="2"><span>%</span></div>
+                        <label for="icms">Alíquota ICMS</label>
+                        <div class="entrada"><input id="icms" name="icms" type="text" inputmode="decimal" value="18,00" data-casas="2"><span>%</span></div>
                     </div>
                     <div class="campo">
-                        <label for="pis">PIS</label>
+                        <label for="pis">Alíquota PIS</label>
                         <div class="entrada"><input id="pis" name="pis" type="text" inputmode="decimal" value="1,65" data-casas="2"><span>%</span></div>
                     </div>
                     <div class="campo">
-                        <label for="cofins">COFINS</label>
+                        <label for="cofins">Alíquota COFINS</label>
                         <div class="entrada"><input id="cofins" name="cofins" type="text" inputmode="decimal" value="7,60" data-casas="2"><span>%</span></div>
                     </div>
                     <div class="campo">
-                        <label for="ibsuf">IBSUF</label>
-                        <div class="entrada"><input id="ibsuf" name="ibsuf" type="text" inputmode="decimal" value="0,00" data-casas="2"><span>%</span></div>
+                        <label for="ibsuf">Alíquota IBS</label>
+                        <div class="entrada"><input id="ibsuf" name="ibsuf" type="text" inputmode="decimal" value="0,10" data-casas="2"><span>%</span></div>
                     </div>
                     <div class="campo">
-                        <label for="cbs">CBS</label>
+                        <label for="cbs">Alíquota CBS</label>
                         <div class="entrada"><input id="cbs" name="cbs" type="text" inputmode="decimal" value="11,30" data-casas="2"><span>%</span></div>
                     </div>
                 </div>
@@ -398,22 +399,22 @@
                 <table>
                     <caption>
                         <h2 class="cartao-titulo">
-                            Valores 2026
-                            <small>O valor atual do produto contém ICMS, PIS e COFINS em 2026</small>
+                            Valores calculados/praticados em 2026
+                            <small>O valor do produto em 2026 contém ICMS, PIS e COFINS embutido no preço.</small>
                         </h2>
                     </caption>
                     <tbody>
-                        <tr class="base"><th scope="row">Valor Atual do Produto</th><td data-saida="a26.valorProduto" data-formato="moeda"></td></tr>
-                        <tr class="separador"><th scope="row">Valor ICMS</th><td data-saida="a26.icms" data-formato="detalhe"></td></tr>
-                        <tr><th scope="row">Valor PIS</th><td data-saida="a26.pis" data-formato="detalhe"></td></tr>
-                        <tr><th scope="row">Valor COFINS</th><td data-saida="a26.cofins" data-formato="detalhe"></td></tr>
-                        <tr><th scope="row">Valor IBSUF <span class="marca" title="Não computado nos totais até 2029">fora do total</span></th><td data-saida="a26.ibsuf" data-formato="detalhe"></td></tr>
-                        <tr><th scope="row">Valor CBS <span class="marca" title="Não computado nos totais até 2027">fora do total</span></th><td data-saida="a26.cbs" data-formato="detalhe"></td></tr>
-                        <tr class="total separador"><th scope="row">Total Impostos</th><td data-saida="a26.totalImpostos" data-formato="moeda"></td></tr>
-                        <tr><th scope="row">Impostos % (aparente)</th><td data-saida="a26.percentualAparente" data-formato="percentual"></td></tr>
-                        <tr class="total separador"><th scope="row">Impostos % (real)</th><td data-saida="a26.percentualReal" data-formato="percentual"></td></tr>
-                        <tr class="liquido"><th scope="row">Valor Líquido Produto</th><td data-saida="a26.valorLiquido" data-formato="moeda"></td></tr>
-                        <tr class="pagar"><th scope="row">Valor a Pagar</th><td data-saida="a26.valorAPagar" data-formato="moeda"></td></tr>
+                        <tr class="base"><th scope="row">Valor Produto em 2026</th><td data-saida="a26.valorProduto" data-formato="moeda"></td></tr>
+                        <tr class="separador"><th scope="row">Valor ICMS (a recolher e declarar)</th><td data-saida="a26.icms" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor PIS (a recolher e declarar)</th><td data-saida="a26.pis" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor COFINS (a recolher e declarar)</th><td data-saida="a26.cofins" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor IBS <span class="marca" title="Não computado nos totais até 2029">fora do total</span></th><td data-saida="a26.ibsuf" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor CBS <span class="marca" title="Não computado nos totais até 2027">fora do total</span></th><td data-saida="a26.cbs" data-formato="detalhe"></td></tr>
+                        <tr class="total separador" style="color: brown"><th scope="row" style="color: brown">Total Impostos (a pagar ao Fisco)</th><td data-saida="a26.totalImpostos" data-formato="moeda"></td></tr>
+                        <tr style="color: brown"><th scope="row" style="color: brown">Impostos % (aparente)</th><td data-saida="a26.percentualAparente" data-formato="percentual"></td></tr>
+                        <tr class="total separador" style="color: brown"><th scope="row"  style="color: brown">Impostos % (real)</th><td data-saida="a26.percentualReal" data-formato="percentual"></td></tr>
+                        <tr class="liquido"><th scope="row">Valor Líquido Produto (sem impostos)</th><td data-saida="a26.valorLiquido" data-formato="moeda"></td></tr>
+                        <tr class="pagar"><th scope="row">Valor à Pagar em 2026</th><td data-saida="a26.valorAPagar" data-formato="moeda"></td></tr>
                     </tbody>
                 </table>
             </section>
@@ -422,22 +423,22 @@
                 <table>
                     <caption>
                         <h2 class="cartao-titulo">
-                            Valores 2027/2028
-                            <small>Valor futuro nos pedidos e nas NF-e</small>
+                            Valores a serem considerados em 2027/2028
+                            <small>O valor do produto em 2027/2028 contêm apenas ICMS embutido no preço.</small>
                         </h2>
                     </caption>
                     <tbody>
                         <tr class="base"><th scope="row">Valor Produto (com ICMS)</th><td data-saida="a27.valorProduto" data-formato="moeda"></td></tr>
-                        <tr class="separador"><th scope="row">Valor ICMS</th><td data-saida="a27.icms" data-formato="detalhe"></td></tr>
-                        <tr class="nulo"><th scope="row">Valor PIS <span class="marca" title="Substituido pela CBS a partir de 2027">ZERADO</span></th><td data-saida="a27.pis" data-formato="detalhe"></td></tr>
-                        <tr class="nulo"><th scope="row">Valor COFINS <span class="marca" title="Substituido pela CBS a partir de 2027">ZERADO</span></th><td data-saida="a27.cofins" data-formato="detalhe"></td></tr>
-                        <tr><th scope="row">Valor IBSUF <span class="marca" title="Não computado nos totais até 2029">fora do total</span></th><td data-saida="a27.ibsuf" data-formato="detalhe"></td></tr>
-                        <tr><th scope="row">Valor CBS</th><td data-saida="a27.cbs" data-formato="detalhe"></td></tr>
-                        <tr class="total separador"><th scope="row">Total Impostos</th><td data-saida="a27.totalImpostos" data-formato="moeda"></td></tr>
-                        <tr><th scope="row">Impostos % (aparente)</th><td data-saida="a27.percentualAparente" data-formato="percentual"></td></tr>
-                        <tr class="total separador"><th scope="row">Impostos % (real)</th><td data-saida="a27.percentualReal" data-formato="percentual"></td></tr>
-                        <tr class="liquido"><th scope="row">Valor Líquido Produto</th><td data-saida="a27.valorLiquido" data-formato="moeda"></td></tr>
-                        <tr class="pagar"><th scope="row">Valor a Pagar</th><td data-saida="a27.valorAPagar" data-formato="moeda"></td></tr>
+                        <tr class="separador"><th scope="row">Valor ICMS (a recolher e declarar)</th><td data-saida="a27.icms" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor PIS <span class="marca" title="Substituido pela CBS a partir de 2027">ZERADO PELA CBS</span></th><td data-saida="a27.pis" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor COFINS <span class="marca" title="Substituido pela CBS a partir de 2027">ZERADO PELA CBS</span></th><td data-saida="a27.cofins" data-formato="detalhe"></td></tr>
+                        <tr class="nulo"><th scope="row">Valor IBS <span class="marca" title="Não computado nos totais até 2029">fora do total</span></th><td data-saida="a27.ibsuf" data-formato="detalhe"></td></tr>
+                        <tr><th scope="row">Valor CBS (a recolher e declarar)</th><td data-saida="a27.cbs" data-formato="detalhe"></td></tr>
+                        <tr class="total separador" style="color: brown"><th scope="row" style="color: brown">Total Impostos (a pagar ao Fisco)</th><td data-saida="a27.totalImpostos" data-formato="moeda"></td></tr>
+                        <tr style="color: brown"><th scope="row" style="color: brown">Impostos % (aparente)</th><td data-saida="a27.percentualAparente" data-formato="percentual"></td></tr>
+                        <tr class="total separador" style="color: brown"><th scope="row" style="color: brown">Impostos % (real)</th><td data-saida="a27.percentualReal" data-formato="percentual"></td></tr>
+                        <tr class="liquido"><th scope="row">Valor Líquido Produto (sem impostos)</th><td data-saida="a27.valorLiquido" data-formato="moeda"></td></tr>
+                        <tr class="pagar"><th scope="row">Valor à Pagar em 2027/2028</th><td data-saida="a27.valorAPagar" data-formato="moeda"></td></tr>
                     </tbody>
                 </table>
             </section>
@@ -445,13 +446,22 @@
 
         <aside class="notas">
             <p>
-                <strong>IBSUF:</strong> entra em vigor somente a partir de 2029 e será escalonado com redução
-                de 10% ao ano no valor do ICMS, parcela que passa a compor o IBSUF. Em princípio, a alíquota
-                do IBSUF será igual à do ICMS atual em 2033. Até lá, seu valor é exibido, mas não compõe os totais.
+                <strong>Impostos:</strong> os valores de impostos destacados, servem apenas como demonstrativo do que é recolhido em 2026 e do que será recolhido a partir de 2027.<br/>
+                Nos documentos da NFe (xml e Danfe) estes dados serão declarados e impressos, para os clientes, contadores e para o fisco.
+            </p>
+            <p>
+                <strong>IBS:</strong> entra em vigor somente a partir de 2029 e será escalonado com redução
+                de 10% ao ano no valor do ICMS, parcela que passa a compor o IBS.<br/><i>Em princípio, a alíquota final
+                do IBS, em 2033, será igual à do ICMS atual, até lá seu valor é exibido nos documentos, mas não compõe os totais, nem o preço de venda.</i>
             </p>
             <p>
                 <strong>2027/2028:</strong> PIS e COFINS deixam de existir. O valor do produto é recomposto
-                mantendo o ICMS embutido, e a CBS é acrescida por fora no valor a pagar.
+                mantendo o ICMS embutido, e a CBS é acrescida por fora no valor à pagar.
+            </p>
+            <p style="color: brown">
+                <strong>Porque varia o valor à Pagar para o Cliente ?</strong><br/>
+                Dependendo do valor da alíquota do ICMS, poderemos ter <b>um aumento do valor à pagar ou uma redução</b>.<br/>
+                Isto se deve a forma que os impostos são calculados em 2026, onde as alíquotas dos impostos incidem sobre si mesmas, que é o cálculo por dentro do preço e a partir de 2027 uma parte dos impostos (o CBS) é calculada por fora do preço, e isso por sí só causa uma redução ou aumento do valor à pagar dependendo da alíquota do ICMS e da alíquota da CBS.
             </p>
         </aside>
     </main>
