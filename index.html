@@ -411,6 +411,7 @@
                         <tr><th scope="row">Valor CBS</th><td data-saida="a26.cbs" data-formato="detalhe"></td></tr>
                         <tr class="total separador"><th scope="row">Total Impostos</th><td data-saida="a26.totalImpostos" data-formato="moeda"></td></tr>
                         <tr><th scope="row">Impostos % (aparente)</th><td data-saida="a26.percentualAparente" data-formato="percentual"></td></tr>
+                        <tr class="total separador"><th scope="row">Impostos % (real)</th><td data-saida="a26.percentualReal" data-formato="percentual"></td></tr>
                         <tr class="liquido"><th scope="row">Valor Líquido Produto</th><td data-saida="a26.valorLiquido" data-formato="moeda"></td></tr>
                         <tr class="pagar"><th scope="row">Valor a Pagar</th><td data-saida="a26.valorAPagar" data-formato="moeda"></td></tr>
                     </tbody>
@@ -434,6 +435,7 @@
                         <tr><th scope="row">Valor CBS</th><td data-saida="a27.cbs" data-formato="detalhe"></td></tr>
                         <tr class="total separador"><th scope="row">Total Impostos</th><td data-saida="a27.totalImpostos" data-formato="moeda"></td></tr>
                         <tr><th scope="row">Impostos % (aparente)</th><td data-saida="a27.percentualAparente" data-formato="percentual"></td></tr>
+                        <tr class="total separador"><th scope="row">Impostos % (real)</th><td data-saida="a27.percentualReal" data-formato="percentual"></td></tr>
                         <tr class="liquido"><th scope="row">Valor Líquido Produto</th><td data-saida="a27.valorLiquido" data-formato="moeda"></td></tr>
                         <tr class="pagar"><th scope="row">Valor a Pagar</th><td data-saida="a27.valorAPagar" data-formato="moeda"></td></tr>
                     </tbody>
@@ -474,6 +476,7 @@
             valores.totalImpostos = valores.icms + valores.pis + valores.cofins + valores.cbs;
             valores.percentualAparente = valorAtual ? valores.totalImpostos / valorAtual : 0;
             valores.valorLiquido = valorAtual * (1 - (icms + pis + cofins));
+            valores.percentualReal = valores.valorLiquido ? valores.totalImpostos / valores.valorLiquido : 0;
             valores.valorAPagar = valorAtual;
             return valores;
         }
@@ -492,6 +495,7 @@
             valores.totalImpostos = valores.icms + valores.cbs;
             valores.percentualAparente = valorProduto ? valores.totalImpostos / valorProduto : 0;
             valores.valorLiquido = valorProduto * (1 - icms);
+            valores.percentualReal = valores.valorLiquido ? valores.totalImpostos / valores.valorLiquido : 0;
             valores.valorAPagar = valorProduto + valores.cbs;
             return valores;
         }
